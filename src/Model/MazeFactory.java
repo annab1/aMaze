@@ -1,4 +1,5 @@
 package Model;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -26,12 +27,21 @@ public final class MazeFactory {
 			}
 		}
 	}
+	
+	public static boolean canMove(int x,int y,DIR dir, int[][] maze) {
+		int tile = maze[x][y];
+		return (tile & dir.bit) != 0;
+	}
  
 	private static boolean between(int v, int upper) {
 		return (v >= 0) && (v < upper);
 	}
+	
+	public static double getDistanceToEnd(int x,int y,int rows,int cols) {
+		return Math.abs((y - cols)+ (x - rows));
+	}
  
-	private enum DIR {
+	public enum DIR {
 		N(1, 0, -1), S(2, 0, 1), E(4, 1, 0), W(8, -1, 0);
 		private final int bit;
 		private final int dx;
@@ -51,6 +61,23 @@ public final class MazeFactory {
 			this.dx = dx;
 			this.dy = dy;
 		}
+		
+		public static DIR getByBit(int bit) {
+
+			return DIR.E.bit == bit? DIR.E :
+				(DIR.S.bit == bit)? DIR.S :
+					(DIR.N.bit == bit)? DIR.N:
+					(DIR.W.bit == bit)? DIR.W : null;
+		}
+		
+		public int getX() {
+			return this.dx;
+		}
+		
+		public int getY() {
+			return this.dy;
+		}
+		
 	};
  
 }

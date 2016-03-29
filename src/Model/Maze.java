@@ -24,7 +24,5 @@ public class Maze {
 		return Math.abs((node1Location.y - node2Location.y)+(node1Location.x - node2Location.x));
 	}
 	
-	public double getDistanceToEnd(Node node1) {
-		return this.getDistance(node1, this.end);
-	}
+	
 }
