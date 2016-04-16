@@ -15,8 +15,6 @@ public class Maze {
 		this.maze = maze;
 	}
 	
-
-	
 	public List<Node> solve() {
 		return AStar.solve(this.maze);
 	}

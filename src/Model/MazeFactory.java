@@ -2,16 +2,15 @@ package Model;
 import java.util.Arrays;
 import java.util.Collections;
 
-import view.Maze;
 
 public final class MazeFactory {
 	private MazeFactory() {
     }
  
-	public static Maze createMaze(int rows, int cols) {
+	public static int [][] createMaze(int rows, int cols) {
 		int [][]maze = new int[rows][cols];
 		generateMaze(0, 0, maze, rows, cols);
-		return new Maze(maze);
+		return maze;
 	}
 	
 	private static void generateMaze(int cx, int cy, int[][] maze,int rows,int cols) {
