@@ -1,16 +1,17 @@
 package Model;
-import java.awt.Point;
 import java.util.Arrays;
 import java.util.Collections;
+
+import view.Maze;
 
 public final class MazeFactory {
 	private MazeFactory() {
     }
  
-	public static int[][] createMaze(int rows, int cols) {
+	public static Maze createMaze(int rows, int cols) {
 		int [][]maze = new int[rows][cols];
 		generateMaze(0, 0, maze, rows, cols);
-		return maze;
+		return new Maze(maze);
 	}
 	
 	private static void generateMaze(int cx, int cy, int[][] maze,int rows,int cols) {
@@ -32,7 +33,7 @@ public final class MazeFactory {
 		int tile = maze[x][y];
 		return (tile & dir.bit) != 0;
 	}
- 
+	
 	private static boolean between(int v, int upper) {
 		return (v >= 0) && (v < upper);
 	}

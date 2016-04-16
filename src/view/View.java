@@ -2,13 +2,13 @@ package view;
 import org.eclipse.swt.events.PaintEvent;
 
 import java.util.List;
-import java.awt.Point;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 
-import Model.AStar;
 import Model.MazeFactory;
 import Model.MazeFactory.DIR;
 import Model.Node;
@@ -17,119 +17,138 @@ import org.eclipse.swt.widgets.*;
 
 
 public class View {
+	private static Maze maze;
+	private static Player player;
+	private static List<Node> solution;
 	
     public static void main(String[] args){
-    int x = 6;
-	int y = 6;
-	final int tileSize = 30;
-	final int[][] maze = MazeFactory.createMaze(x, y);
-	final List<Node> solution = AStar.solve(maze);
+	
 	final Display display = new Display ();
-
 	final Shell shell = new Shell(display);
+	shell.setSize(900, 600);
 	shell.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-	GridLayout layout = new GridLayout();    
-    layout.marginWidth = 500;
-    layout.marginHeight =500;
-	layout.numColumns = 3;
-	final int margin = 50;
-	final Point figureLoc = new Point(0,0);
+	View.drawSettings(shell);
+	GridLayout layout = new GridLayout(8, false);    
+    //layout.marginWidth = 600;
+    //layout.marginHeight =200;
 	shell.setLayout(layout);	
-
-	display.addFilter(SWT.KeyDown, new Listener(){
+	View.createMaze(shell);
+	
+	Display.getCurrent().addFilter(SWT.KeyDown, new Listener(){
 
 		@Override
 		public void handleEvent(Event event) {
 			switch(event.keyCode) { 
 			case SWT.ARROW_DOWN: {
-				View.tryMove(DIR.S, figureLoc, maze);
+				maze.movePlayer(DIR.S, player);
 				break; 
 				}
 			case SWT.ARROW_LEFT: {	
-				View.tryMove(DIR.W, figureLoc, maze);
+				maze.movePlayer(DIR.W, player);
 				break; 
 				}
 			case SWT.ARROW_RIGHT: {	
-				View.tryMove(DIR.E, figureLoc, maze);
+				maze.movePlayer(DIR.E, player);
 				break; 
 				}
 			case SWT.ARROW_UP: {	
-				View.tryMove(DIR.N, figureLoc, maze);
+				maze.movePlayer(DIR.N, player);
 				break; 
 			 } 
 			}
 			shell.redraw();
 			
 		} 
-	
 	});
 	shell.addPaintListener(new PaintListener(){ 
         public void paintControl(PaintEvent e){
-    		View.drawSolution(solution, e.gc, tileSize, margin);
-    		View.drawMaze(maze, e.gc, margin, tileSize);
-    		View.drawFigure(margin + 2 + (figureLoc.x * tileSize), margin + 2 + (figureLoc.y * tileSize), 26, e.gc);
+    		View.drawSolution(solution, e.gc);
+    		maze.draw(e.gc);
+    		player.draw(e.gc);
         }
     });
 	
-	shell.pack();
+	//shell.pack();
     shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
     }
-    
-    private static void drawSolution(List<Node> solution, GC gc, int tileSize, int margin) {
+
+    private static void createMaze(final Shell shell) {
+    	maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
+    	solution = maze.solve();
+    	player = new Player();
+    }
+    private static void drawSolution(List<Node> solution, GC gc) {
+    	int tileSize = GameSettings.tileSize;
+    	int margin = GameSettings.margin;
     	for (Node node : solution) {
     		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
     		gc.fillRectangle((node.x * tileSize) + margin +1, (node.y * tileSize + margin) + 1, tileSize -1, tileSize -1);
     	}
     }
-    
-    private static void tryMove(DIR dir, Point currentLoc, int[][] maze) {
-    	boolean canMove = MazeFactory.canMove((int) currentLoc.getX(), (int) currentLoc.getY(), dir, maze);
-		if (canMove) {
-			currentLoc.y = currentLoc.y + dir.getY();
-			currentLoc.x = currentLoc.x + dir.getX();
-		}
-    }
+	
+    private static void drawSettings(final Shell shell) {
+    	VerifyListener numberVerify = new VerifyListener() {
 
-	public static void drawMaze(int[][] maze, GC gc, int margin, int tileSize) {
-		int cols = maze.length;
-		int rows = maze[0].length;
-		for (int y= 0; y < rows; y++) {
-			int newY = (y * tileSize) + margin;
-			// draw the north edge
-			for (int x= 0; x < cols; x++) {
-				int newX = (x * tileSize) + margin;
-				int a = maze[x][y];
-				boolean isNorth = (a & 1) == 0;
-				if (isNorth) {
-					gc.drawLine(newX,newY ,newX + tileSize,newY);
-				}
-			}
-			// draw the west edge
-			for (int x = 0; x < cols; x++) {
-				int newX = (x * tileSize) + margin;
-				boolean isWest = (maze[x][y] & 8) == 0;
-				if (isWest) {
-					gc.drawLine(newX,newY,newX, newY + tileSize);
-				}
-			}
-			int lastX = (cols * tileSize) + margin;
-			gc.drawLine(lastX, newY, lastX, newY + tileSize);
-		}
+	        @Override
+	        public void verifyText(VerifyEvent e) {
+
+	            Text text = (Text)e.getSource();
+
+	            // get old text and create new text by using the VerifyEvent.text
+	            final String oldS = text.getText();
+	            String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+
+	            boolean isInt = true;
+	            try
+	            {
+	                Integer.parseInt(newS);
+	            }
+	            catch(NumberFormatException ex)
+	            {
+	                isInt = false;
+	            }
+
+	            if(!isInt && newS != null && !newS.isEmpty())
+	                e.doit = false;
+	        }
+	    };
+	    
+		Label rowsLabel = new Label(shell, SWT.NONE);
+		rowsLabel.setText("Rows:");
+		final Text rowsText = new Text(shell, SWT.BORDER);
+		rowsText.setText(Integer.toString(GameSettings.rows));
+		rowsText.addVerifyListener(numberVerify);
 		
-		int lastY = (rows * tileSize) + margin;
-		int lastX = (cols * tileSize) + margin;
-		gc.drawLine(margin,lastY,lastX, lastY);
-	}
+		Label colsLabel = new Label(shell, SWT.PUSH);
+		colsLabel.setText("Columns:");
+		final Text colsText = new Text(shell, SWT.BORDER);
+		colsText.setText(Integer.toString(GameSettings.cols));
+		colsText.addVerifyListener(numberVerify);
 		
-	public static void drawFigure(int x, int y, int size, GC gc) {
-		Display display = Display.getCurrent();
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-		gc.fillOval(x, y, size, size);
-	}
-	
-	
+		Button applyBtn = new Button(shell, SWT.NONE);
+		applyBtn.setText("Apply");
+		applyBtn.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+		        switch (e.type) {
+		        case SWT.Selection: {
+		        	try 
+		        	{
+			        	GameSettings.rows = Integer.parseInt(rowsText.getText());
+			        	GameSettings.cols = Integer.parseInt(colsText.getText());
+			            View.createMaze(shell);
+			            shell.redraw();
+		        	}
+		        	catch (Exception err) {
+		        		
+		        	}
+		            break;
+		        }
+		        }
+		      }
+		    });
+    }
 }

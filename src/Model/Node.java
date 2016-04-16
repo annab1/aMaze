@@ -1,12 +1,11 @@
 package Model;
 
 public class Node{
-        public boolean visited;
         public Node parent;
         public double priority;
+        public int val;
         public int x;
         public int y;
-        public int val;
         
         public Node(int x, int y, int val) { 
         	this.x = x;
