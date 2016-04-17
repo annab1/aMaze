@@ -3,22 +3,15 @@ package view;
 
 import org.eclipse.swt.graphics.GC;
 
-import Model.MazeFactory;
-import Model.MazeFactory.DIR;
-
 public class Maze {
 	private int [][] maze;
 	public Maze(int[][] maze) {
 		this.maze = maze;
 	}
-
-	public void movePlayer(DIR dir, Player player) {
-		int tile = this.maze[player.getX()][player.getY()];
-    	boolean canMove = MazeFactory.canMove(tile, dir);
-		if (canMove) {
-			player.move(dir);
-		}
-    }
+	
+	public int getValueAt(int x, int y) {
+		return maze[x][y];
+	}
 	
 	public void draw(GC gc) {
 		int cols = this.maze.length;

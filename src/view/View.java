@@ -10,8 +10,6 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 
-import Model.MazeFactory.DIR;
-
 import org.eclipse.swt.widgets.*;
 
 public class View {
@@ -23,6 +21,7 @@ public class View {
 	private Display display;
 	private SolveListener solveListener;
 	private Listener applyListener;
+	private PlayerMoveListener playerMoveListener;
 	
     public View(int [][] maze) {
     	this.init(maze);
@@ -46,25 +45,30 @@ public class View {
 
 			@Override
 			public void handleEvent(Event event) {
-				switch(event.keyCode) { 
-				case SWT.ARROW_DOWN: {
-					maze.movePlayer(DIR.S, player);
-					break; 
+				if (playerMoveListener != null) {
+					PlayerMoveEvent e = new PlayerMoveEvent();
+					e.player = player;
+					e.currentTile = maze.getValueAt(player.getX(), player.getY());
+					switch(event.keyCode) { 
+					case SWT.ARROW_DOWN: {
+						playerMoveListener.OnMoveDown(e);
+						break; 
+						}
+					case SWT.ARROW_LEFT: {	
+						playerMoveListener.OnMoveLeft(e);
+						break; 
+						}
+					case SWT.ARROW_RIGHT: {	
+						playerMoveListener.OnMoveRight(e);
+						break; 
+						}
+					case SWT.ARROW_UP: {	
+						playerMoveListener.OnMoveUp(e);
+						break; 
+					 } 
 					}
-				case SWT.ARROW_LEFT: {	
-					maze.movePlayer(DIR.W, player);
-					break; 
-					}
-				case SWT.ARROW_RIGHT: {	
-					maze.movePlayer(DIR.E, player);
-					break; 
-					}
-				case SWT.ARROW_UP: {	
-					maze.movePlayer(DIR.N, player);
-					break; 
-				 } 
+					shell.redraw();
 				}
-				shell.redraw();
 				
 			} 
 		});
@@ -107,6 +111,10 @@ public class View {
     
     public void onApply(Listener listener) {
     	applyListener = listener;
+    }
+    
+    public void onPlayerMove(PlayerMoveListener listener) {
+    	playerMoveListener = listener;
     }
     
     public void showSolution(List<Point> solution) {

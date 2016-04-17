@@ -28,21 +28,14 @@ public final class MazeFactory {
 		}
 	}
 	
-	public static boolean canMove(int tile,DIR dir) {
-		return (tile & dir.bit) != 0;
-	}
-	
 	private static boolean between(int v, int upper) {
 		return (v >= 0) && (v < upper);
 	}
 	
-	public static double getDistanceToEnd(int x,int y,int rows,int cols) {
-		return Math.abs((y - cols)+ (x - rows));
-	}
  
 	public enum DIR {
 		N(1, 0, -1), S(2, 0, 1), E(4, 1, 0), W(8, -1, 0);
-		private final int bit;
+		final int bit;
 		private final int dx;
 		private final int dy;
 		private DIR opposite;
@@ -75,6 +68,10 @@ public final class MazeFactory {
 		
 		public int getY() {
 			return this.dy;
+		}
+		
+		public boolean canMoveTo(int value) {
+			return (value & bit) != 0;
 		}
 		
 	};

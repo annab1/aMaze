@@ -25,6 +25,14 @@ public class Maze implements ISearchDomain {
     	
     	return maze;
 	}
+	
+	private double getDistanceToEnd(int x,int y) {
+		return Math.abs((y - cols - 1)+ (x - rows - 1));
+	}
+	
+	private boolean canMove(Node node, DIR dir) {
+		return dir.canMoveTo(node.val);
+	}
 
 	@Override
 	public Node getInitialNode(Point initialLocation) {
@@ -43,9 +51,9 @@ public class Maze implements ISearchDomain {
             int tr = current.x + dir.getX();
             int tc = current.y + dir.getY();
          
-            if (tr >= 0 && tr < rows && tc >= 0 && tc < cols && MazeFactory.canMove(current.val, dir)) {
+            if (tr >= 0 && tr < rows && tc >= 0 && tc < cols && canMove(current, dir)) {
             	Node sibling = maze[tr][tc];
-            	successorLogic.checkSuccessor(sibling, MazeFactory.getDistanceToEnd(tr, tc, rows -1, cols -1));
+            	successorLogic.checkSuccessor(sibling, getDistanceToEnd(tr, tc));
             }
         }
 		

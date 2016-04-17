@@ -6,8 +6,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
-import Model.MazeFactory.DIR;
-
 public class Player {
 	private int x;
 	private int y;
@@ -28,9 +26,20 @@ public class Player {
 		return new Point(x, y);
 	}
 	
-	public void move(DIR dir) {
-		y = y + dir.getY();
-		x = x + dir.getX();
+	public void moveUp() {
+		y = y - 1;
+	}
+	
+	public void moveDown() {
+		y = y + 1;
+	}
+	
+	public void moveLeft() {
+		x = x - 1;
+	}
+	
+	public void moveRight() {
+		x = x + 1;
 	}
 	
 	public void draw(GC gc) {

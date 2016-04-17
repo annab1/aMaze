@@ -11,7 +11,10 @@ import Model.AStar;
 import Model.BestFirstSearch;
 import Model.ISearch;
 import Model.MazeFactory;
+import Model.MazeFactory.DIR;
 import view.GameSettings;
+import view.PlayerMoveEvent;
+import view.PlayerMoveListener;
 import view.SolveEvent;
 import view.SolveListener;
 import view.View;
@@ -23,6 +26,7 @@ public class Main {
 		maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
 		view = new View(maze);
 		final ISearch search = new BestFirstSearch();
+		
 		view.onSolve(new SolveListener() {
 			public void handleEvent(final SolveEvent e) {
 				new Thread(new Runnable() {
@@ -45,6 +49,29 @@ public class Main {
 			public void handleEvent(Event e) {
 				maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
 				view.init(maze);
+			}
+		});
+		
+		view.onPlayerMove(new PlayerMoveListener() {
+			public void OnMoveDown(PlayerMoveEvent e) {
+				if (DIR.S.canMoveTo(e.currentTile)) {
+					e.player.moveDown();
+				}
+			}
+			public void OnMoveUp(PlayerMoveEvent e) {
+				if (DIR.N.canMoveTo(e.currentTile)) {
+					e.player.moveUp();
+				}
+			}
+			public void OnMoveLeft(PlayerMoveEvent e) {
+				if (DIR.W.canMoveTo(e.currentTile)) {
+					e.player.moveLeft();
+				}
+			}
+			public void OnMoveRight(PlayerMoveEvent e) {
+				if (DIR.E.canMoveTo(e.currentTile)) {
+					e.player.moveRight();
+				}
 			}
 		});
 		view.draw();
