@@ -1,14 +1,19 @@
 package Presenter;
 
+import java.awt.Point;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import Model.AStar;
+import Model.BestFirstSearch;
+import Model.ISearch;
 import Model.MazeFactory;
-import Model.Node;
 import view.GameSettings;
+import view.SolveEvent;
+import view.SolveListener;
 import view.View;
 
 public class Main {
@@ -17,10 +22,22 @@ public class Main {
 	public static void main(String[] args){
 		maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
 		view = new View(maze);
-		view.onSolve(new Listener() {
-			public void handleEvent(Event e) {
-				List<Node> solution = AStar.solve(maze);
-				view.showSolution(solution);
+		final ISearch search = new BestFirstSearch();
+		view.onSolve(new SolveListener() {
+			public void handleEvent(final SolveEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+					final List<Point> solution = search.solve(new Model.Maze(maze), e.currLoc, e.steps);
+					Display display = view.getDisplay();
+					display.syncExec(new Runnable() {
+						@Override
+						public void run() {
+							view.showSolution(solution);
+						}
+					});
+					}
+				}).start();
 			}
 		});
 		

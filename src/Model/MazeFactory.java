@@ -28,8 +28,7 @@ public final class MazeFactory {
 		}
 	}
 	
-	public static boolean canMove(int x,int y,DIR dir, int[][] maze) {
-		int tile = maze[x][y];
+	public static boolean canMove(int tile,DIR dir) {
 		return (tile & dir.bit) != 0;
 	}
 	

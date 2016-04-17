@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.Point;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
@@ -20,6 +22,10 @@ public class Player {
 	
 	public int getY() {
 		return y;
+	}
+	
+	public Point getLocation() {
+		return new Point(x, y);
 	}
 	
 	public void move(DIR dir) {

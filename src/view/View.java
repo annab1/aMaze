@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Point;
 import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -9,7 +10,6 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 
-import Model.Node;
 import Model.MazeFactory.DIR;
 
 import org.eclipse.swt.widgets.*;
@@ -17,24 +17,29 @@ import org.eclipse.swt.widgets.*;
 public class View {
 	private Maze maze;
 	private Player player;
-	private List<Node> solution;
+	private List<Point> solution;
 	private boolean showSolution;
 	private Shell shell;
-	private Listener solveListener;
+	private Display display;
+	private SolveListener solveListener;
 	private Listener applyListener;
 	
     public View(int [][] maze) {
     	this.init(maze);
     }
     
+    public Display getDisplay() {
+    	return display;
+    }
+    
     public void draw() {
 		
-		final Display display = new Display ();
+		display = new Display ();
 		shell = new Shell(display);
 		shell.setSize(900, 600);
 		shell.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		this.drawSettings(shell);
-		GridLayout layout = new GridLayout(8, false);    
+		GridLayout layout = new GridLayout(10, false);    
 		shell.setLayout(layout);	
 		
 		Display.getCurrent().addFilter(SWT.KeyDown, new Listener(){
@@ -88,16 +93,15 @@ public class View {
     }
     
     private void drawSolution(GC gc) {
-
     	int tileSize = GameSettings.tileSize;
     	int margin = GameSettings.margin;
-    	for (Node node : solution) {
-    		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-    		gc.fillRectangle((node.x * tileSize) + margin +1, (node.y * tileSize + margin) + 1, tileSize -1, tileSize -1);
+		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
+    	for (Point point : solution) {
+    		gc.fillRectangle((point.x * tileSize) + margin +1, (point.y * tileSize + margin) + 1, tileSize -1, tileSize -1);
     	}
     }
     
-    public void onSolve(Listener listener) {
+    public void onSolve(SolveListener listener) {
     	solveListener = listener;
     }
     
@@ -105,7 +109,7 @@ public class View {
     	applyListener = listener;
     }
     
-    public void showSolution(List<Node> solution) {
+    public void showSolution(List<Point> solution) {
     	this.solution = solution;
     	this.showSolution = true;
     	this.shell.redraw();
@@ -120,7 +124,6 @@ public class View {
 
 	            Text text = (Text)e.getSource();
 
-	            // get old text and create new text by using the VerifyEvent.text
 	            final String oldS = text.getText();
 	            String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
 
@@ -173,6 +176,13 @@ public class View {
 		      }
 		    });
 		
+		Label nextStepsLabel = new Label(shell, SWT.NONE);
+		nextStepsLabel.setText("Show next");
+		final Text nextStepsText = new Text(shell, SWT.BORDER);
+		nextStepsText.addVerifyListener(numberVerify);
+		Label stepsLabel = new Label(shell, SWT.NONE);
+		stepsLabel.setText("steps");
+		
 		Button solveBtn = new Button(shell, SWT.NONE);
 		solveBtn.setText("Solve");
 		solveBtn.addListener(SWT.Selection, new Listener() {
@@ -182,7 +192,13 @@ public class View {
 		        	try 
 		        	{
 		        		if (solveListener != null) {
- 		        		  solveListener.handleEvent(e);
+		        			SolveEvent event = new SolveEvent();
+		        			event.currLoc = player.getLocation();
+		        			String nextSteps = nextStepsText.getText();
+		        			if (!nextSteps.isEmpty()) {
+		        				event.steps = Integer.parseInt(nextSteps); 
+		        			}
+		        			solveListener.handleEvent(event);
 		        		}
 		        	}
 		        	catch (Exception err) {}
@@ -193,3 +209,10 @@ public class View {
 		    });
     }
 }
+
+
+
+
+
+
+

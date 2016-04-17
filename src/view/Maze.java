@@ -1,26 +1,20 @@
 package view;
 
-import java.util.List;
 
 import org.eclipse.swt.graphics.GC;
 
-import Model.AStar;
 import Model.MazeFactory;
 import Model.MazeFactory.DIR;
-import Model.Node;
 
 public class Maze {
 	private int [][] maze;
 	public Maze(int[][] maze) {
 		this.maze = maze;
 	}
-	
-	public List<Node> solve() {
-		return AStar.solve(this.maze);
-	}
-	
+
 	public void movePlayer(DIR dir, Player player) {
-    	boolean canMove = MazeFactory.canMove(player.getX(), player.getY(), dir, this.maze);
+		int tile = this.maze[player.getX()][player.getY()];
+    	boolean canMove = MazeFactory.canMove(tile, dir);
 		if (canMove) {
 			player.move(dir);
 		}
