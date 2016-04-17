@@ -1,8 +1,8 @@
-package Model;
+package model;
 
 import java.awt.Point;
 
-import Model.MazeFactory.DIR;
+import model.MazeFactory.DIR;
 
 public class Maze implements ISearchDomain {
 	private int rows;

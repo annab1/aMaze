@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -10,10 +10,7 @@ public abstract class AbstractSearch implements ISearch {
 		Node endNode = innerSolve(searchDomain, start, steps);
 		
 		List<Point> path = new ArrayList<Point>();
-		int counter = 0;
         while (endNode != null) {
-        	counter++;
-        	System.out.println(counter);
         	path.add(new Point(endNode.x, endNode.y));
         	endNode = endNode.parent != null? endNode.parent : null;
         }

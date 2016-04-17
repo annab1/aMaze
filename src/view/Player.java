@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Display;
 public class Player {
 	private int x;
 	private int y;
+	
 	public Player() {
 		x = 0;
 		y = 0;

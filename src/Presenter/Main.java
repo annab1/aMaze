@@ -1,4 +1,4 @@
-package Presenter;
+package presenter;
 
 import java.awt.Point;
 import java.util.List;
@@ -7,11 +7,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import Model.AStar;
-import Model.BestFirstSearch;
-import Model.ISearch;
-import Model.MazeFactory;
-import Model.MazeFactory.DIR;
+import model.AStar;
+import model.BestFirstSearch;
+import model.ISearch;
+import model.MazeFactory;
+import model.MazeFactory.DIR;
 import view.GameSettings;
 import view.PlayerMoveEvent;
 import view.PlayerMoveListener;
@@ -32,7 +32,7 @@ public class Main {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-					final List<Point> solution = search.solve(new Model.Maze(maze), e.currLoc, e.steps);
+					final List<Point> solution = search.solve(new model.Maze(maze), e.currLoc, e.steps);
 					Display display = view.getDisplay();
 					display.syncExec(new Runnable() {
 						@Override

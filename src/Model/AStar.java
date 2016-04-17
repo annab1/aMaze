@@ -1,4 +1,4 @@
-package Model;
+package model;
 import java.util.PriorityQueue;
 
 import java.util.Map;
