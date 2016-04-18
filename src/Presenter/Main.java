@@ -7,11 +7,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import model.AStar;
-import model.BestFirstSearch;
-import model.ISearch;
-import model.MazeFactory;
-import model.MazeFactory.DIR;
+import Common.MazeFactory.DIR;
+import model.MazeLogics;
+import model.ServiceConnector;
 import view.GameSettings;
 import view.PlayerMoveEvent;
 import view.PlayerMoveListener;
@@ -23,16 +21,16 @@ public class Main {
 	private static View view;
 	private static int [][] maze;
 	public static void main(String[] args){
-		maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
+		
+		maze = MazeLogics.createMaze(GameSettings.rows, GameSettings.cols);
 		view = new View(maze);
-		final ISearch search = new BestFirstSearch();
 		
 		view.onSolve(new SolveListener() {
 			public void handleEvent(final SolveEvent e) {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-					final List<Point> solution = search.solve(new model.Maze(maze), e.currLoc, e.steps);
+					final List<Point> solution = MazeLogics.solve(maze, e.currLoc, e.steps);
 					Display display = view.getDisplay();
 					display.syncExec(new Runnable() {
 						@Override
@@ -47,7 +45,7 @@ public class Main {
 		
 		view.onApply(new Listener() {
 			public void handleEvent(Event e) {
-				maze = MazeFactory.createMaze(GameSettings.rows, GameSettings.cols);
+				maze = MazeLogics.createMaze(GameSettings.rows, GameSettings.cols);
 				view.init(maze);
 			}
 		});
@@ -73,7 +71,7 @@ public class Main {
 					e.player.moveRight();
 				}
 			}
-		});
+		}); 
 		view.draw();
 	
 	}
